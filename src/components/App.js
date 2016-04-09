@@ -1,11 +1,11 @@
 import classnames from 'classnames';
 import Firebase from 'firebase';
-import { each, filter, map, reduce } from 'lodash';
+import { each, reduce } from 'lodash';
 import React, { PropTypes } from 'react';
 
-import api from './api';
-import config from './config';
-import TodoItem from './TodoItem';
+import api from '../api';
+import config from '../config';
+import Todos from './Todos';
 
 class App extends React.Component {
   constructor(props) {
@@ -71,7 +71,7 @@ class App extends React.Component {
           onChange={(e) => {this.setState({ text: e.target.value }); }}
           handleSubmit={this.handleSubmit}
         />
-        <Main
+        <Todos
           items={this.state.items}
           activeTodoCount={activeTodoCount}
           nowShowing={this.state.nowShowing}
@@ -100,37 +100,6 @@ Header.propTypes = {
   text: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-};
-
-const Main = ({ items, activeTodoCount, nowShowing }) => {
-  const shownTodos = filter(items, item => {
-    switch (nowShowing) {
-      case 'active':
-        return !item.completed;
-      case 'completed':
-        return item.completed;
-      default:
-        return true;
-    }
-  });
-  return (
-    <section id={'main'}>
-      <input
-        id={'toggle-all'}
-        type={'checkbox'}
-        onChange={() => { each(items, api.todos.toggle); }}
-        checked={activeTodoCount === 0}
-      />
-			<ul id={'todo-list'}>
-				{map(shownTodos, todo => <TodoItem key={todo.id} todo={todo} />)}
-			</ul>
-		</section>
-  );
-};
-Main.propTypes = {
-  items: PropTypes.object,
-  activeTodoCount: PropTypes.number,
-  nowShowing: PropTypes.string,
 };
 
 const Footer = ({ count, completedCount, onClearCompleted, nowShowing, handleShowFilter }) => {

@@ -1,7 +1,7 @@
 import classnames from 'classnames';
 import React, { PropTypes } from 'react';
 
-import api from './api';
+import api from '../api';
 
 const ESCAPE_KEY = 27;
 const ENTER_KEY = 13;
