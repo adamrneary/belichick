@@ -1,5 +1,5 @@
 import Firebase from 'firebase';
-import { map, reduce } from 'lodash';
+import { each, map, reduce } from 'lodash';
 import React, { PropTypes } from 'react';
 
 import api from './api';
@@ -81,7 +81,7 @@ const Main = ({ items }) => {
       <input
         id={'toggle-all'}
         type={'checkbox'}
-        onChange={() => { items.forEach(api.todos.toggle); }}
+        onChange={() => { each(items, api.todos.toggle); }}
         checked={activeTodoCount === 0}
       />
 			<ul id={'todo-list'}>
