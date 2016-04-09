@@ -1,5 +1,6 @@
+import classnames from 'classnames';
 import Firebase from 'firebase';
-import { each, map, reduce } from 'lodash';
+import { each, filter, map, reduce } from 'lodash';
 import React, { PropTypes } from 'react';
 
 import api from './api';
@@ -12,8 +13,10 @@ class App extends React.Component {
     this.state = {
       items: {},
       text: '',
+      nowShowing: 'all',
     };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.clearCompleted = this.clearCompleted.bind(this);
   }
 
   componentWillMount() {
@@ -38,7 +41,29 @@ class App extends React.Component {
     }
   }
 
+  clearCompleted() {
+    each(this.state.items, item => {
+      if (item.completed) {
+        api.todos.delete(item.id);
+      }
+    });
+  }
+
   render() {
+    const activeTodoCount = reduce(this.state.items, (accum, todo) =>
+      (todo.completed ? accum : accum + 1)
+    , 0);
+    const completedCount = Object.keys(this.state.items).length - activeTodoCount;
+    const footer = !Object.keys(this.state.items).length ? undefined : (
+      <Footer
+        count={activeTodoCount}
+        completedCount={completedCount}
+        nowShowing={this.state.nowShowing}
+        onClearCompleted={this.clearCompleted}
+        handleShowFilter={(val) => {this.setState({ nowShowing: val }); }}
+      />
+  );
+
     return (
       <div>
         <Header
@@ -46,7 +71,12 @@ class App extends React.Component {
           onChange={(e) => {this.setState({ text: e.target.value }); }}
           handleSubmit={this.handleSubmit}
         />
-        <Main items={this.state.items} />
+        <Main
+          items={this.state.items}
+          activeTodoCount={activeTodoCount}
+          nowShowing={this.state.nowShowing}
+        />
+        {footer}
       </div>
     );
   }
@@ -72,10 +102,17 @@ Header.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
 };
 
-const Main = ({ items }) => {
-  const activeTodoCount = reduce(items, (accum, todo) =>
-    (todo.completed ? accum : accum + 1)
-  , 0);
+const Main = ({ items, activeTodoCount, nowShowing }) => {
+  const shownTodos = filter(items, item => {
+    switch (nowShowing) {
+      case 'active':
+        return !item.completed;
+      case 'completed':
+        return item.completed;
+      default:
+        return true;
+    }
+  });
   return (
     <section id={'main'}>
       <input
@@ -85,13 +122,81 @@ const Main = ({ items }) => {
         checked={activeTodoCount === 0}
       />
 			<ul id={'todo-list'}>
-				{map(items, todo => <TodoItem key={todo.id} todo={todo} />)}
+				{map(shownTodos, todo => <TodoItem key={todo.id} todo={todo} />)}
 			</ul>
 		</section>
   );
 };
 Main.propTypes = {
   items: PropTypes.object,
+  activeTodoCount: PropTypes.number,
+  nowShowing: PropTypes.string,
+};
+
+const Footer = ({ count, completedCount, onClearCompleted, nowShowing, handleShowFilter }) => {
+  const activeTodoWord = count === 1 ? 'item' : 'items';
+  const clearButton = completedCount && completedCount === 0 ? undefined : (
+    <button id="clear-completed" onClick={onClearCompleted}>
+      Clear completed ({completedCount})
+    </button>
+  );
+
+  return (
+    <footer id="footer">
+      <span id="todo-count">
+        <strong>{count}</strong> {activeTodoWord} left
+      </span>
+      <ul id="filters">
+        <Filter
+          val="all"
+          label="All"
+          nowShowing={nowShowing}
+          handleShowFilter={handleShowFilter}
+        />
+        {' '}
+        <Filter
+          val="active"
+          label="Active"
+          nowShowing={nowShowing}
+          handleShowFilter={handleShowFilter}
+        />
+        {' '}
+        <Filter
+          val="completed"
+          label="Completed"
+          nowShowing={nowShowing}
+          handleShowFilter={handleShowFilter}
+        />
+      </ul>
+      {clearButton}
+    </footer>
+  );
+};
+Footer.propTypes = {
+  count: PropTypes.number,
+  completedCount: PropTypes.number,
+  nowShowing: PropTypes.string,
+  onClearCompleted: PropTypes.func,
+  handleShowFilter: PropTypes.func,
+  passProps: PropTypes.object,
+};
+
+const Filter = ({ val, label, handleShowFilter, nowShowing }) => (
+  <li>
+    <a
+      href="#"
+      onClick={() => {handleShowFilter(val); }}
+      className={classnames({ selected: nowShowing === val })}
+    >
+      {label}
+    </a>
+  </li>
+);
+Filter.propTypes = {
+  val: PropTypes.string,
+  label: PropTypes.string,
+  nowShowing: PropTypes.string,
+  handleShowFilter: PropTypes.func,
 };
 
 export default App;

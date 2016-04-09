@@ -1,5 +1,5 @@
-import React, { PropTypes } from 'react';
 import classnames from 'classnames';
+import React, { PropTypes } from 'react';
 
 import api from './api';
 
