@@ -1,10 +1,9 @@
 import { each, filter, map } from 'lodash';
 import React, { PropTypes } from 'react';
 
-import api from '../api';
 import TodoItem from './TodoItem';
 
-const Todos = ({ items, activeTodoCount, nowShowing }) => {
+const Todos = ({ items, activeTodoCount, nowShowing, toggleTodo }) => {
   const shownTodos = filter(items, item => {
     switch (nowShowing) {
       case 'active':
@@ -20,7 +19,7 @@ const Todos = ({ items, activeTodoCount, nowShowing }) => {
       <input
         id={'toggle-all'}
         type={'checkbox'}
-        onChange={() => { each(items, api.todos.toggle); }}
+        onChange={() => { each(items, toggleTodo); }}
         checked={activeTodoCount === 0}
       />
 			<ul id={'todo-list'}>
@@ -33,6 +32,7 @@ Todos.propTypes = {
   items: PropTypes.object,
   activeTodoCount: PropTypes.number,
   nowShowing: PropTypes.string,
+  toggleTodo: PropTypes.func,
 };
 
 export default Todos;

@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import * as TodoActions from '../actions';
-import api from '../api';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Todos from '../components/Todos';
@@ -37,7 +36,7 @@ class App extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
     if (this.state.text && this.state.text.trim().length !== 0) {
-      api.todos.create(this.state.text.trim());
+      this.props.actions.addTodo(this.state.text.trim());
       this.setState({ text: '' });
     }
   }
@@ -45,13 +44,13 @@ class App extends React.Component {
   clearCompleted() {
     each(this.props.todos, item => {
       if (item.completed) {
-        api.todos.delete(item.id);
+        this.props.actions.deleteTodo(item.id);
       }
     });
   }
 
   render() {
-    const { todos } = this.props;
+    const { todos, actions } = this.props;
     const activeTodoCount = reduce(todos, (accum, todo) =>
       (todo.completed ? accum : accum + 1)
     , 0);
@@ -77,6 +76,7 @@ class App extends React.Component {
           items={todos}
           activeTodoCount={activeTodoCount}
           nowShowing={this.state.nowShowing}
+          {...actions}
         />
         {footer}
       </div>

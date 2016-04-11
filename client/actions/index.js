@@ -1,3 +1,4 @@
+import api from '../api';
 import * as types from '../constants/ActionTypes';
 
 export function onFirebaseValue(dataSnapshot) {
@@ -5,10 +6,12 @@ export function onFirebaseValue(dataSnapshot) {
 }
 
 export function addTodo(text) {
+  api.todos.create(text);
   return { type: types.ADD_TODO, text };
 }
 
 export function deleteTodo(id) {
+  api.todos.delete(id);
   return { type: types.DELETE_TODO, id };
 }
 
@@ -16,8 +19,8 @@ export function editTodo(id, text) {
   return { type: types.EDIT_TODO, id, text };
 }
 
-export function completeTodo(id) {
-  return { type: types.COMPLETE_TODO, id };
+export function toggleTodo(id) {
+  return { type: types.TOGGLE_TODO, id };
 }
 
 export function completeAll() {

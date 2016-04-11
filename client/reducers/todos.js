@@ -1,6 +1,6 @@
 import {
   SERVER_UPDATE,
-  // ADD_TODO, DELETE_TODO, EDIT_TODO, COMPLETE_TODO, COMPLETE_ALL, CLEAR_COMPLETED,
+  // ADD_TODO, DELETE_TODO, EDIT_TODO, TOGGLE_TODO, COMPLETE_ALL, CLEAR_COMPLETED,
 } from '../constants/ActionTypes';
 
 export default function todos(state = {}, action) {
@@ -30,7 +30,7 @@ export default function todos(state = {}, action) {
     //       todo
     //   );
     //
-    // case COMPLETE_TODO:
+    // case TOGGLE_TODO:
     //   return state.map(todo =>
     //     todo.id === action.id ?
     //       Object.assign({}, todo, { completed: !todo.completed }) :
