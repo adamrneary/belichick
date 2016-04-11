@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 
 import TodoApp from './containers/App';
 import configureStore from './store/configureStore';
+import './static/base.css';
 
 const store = configureStore();
 

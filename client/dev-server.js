@@ -14,10 +14,6 @@ app.get('/', (req, res) => {
   res.sendFile(`${__dirname}/index.html`);
 });
 
-app.get('/base.css', (req, res) => {
-  res.sendFile(`${__dirname}/static/base.css`);
-});
-
 app.get('/bg.png', (req, res) => {
   res.sendFile(`${__dirname}/static/bg.png`);
 });
