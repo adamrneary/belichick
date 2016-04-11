@@ -1,6 +1,6 @@
 steps:
- - [ ] react firebase working example
- - [ ] POST user and get/handle variant
+ - [x] react firebase working example
+ - [x] POST user and get/handle variant
  - [ ] actions to POSTs, updating aggregations
 
 

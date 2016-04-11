@@ -4,7 +4,7 @@ import { each, reduce } from 'lodash';
 import React, { PropTypes } from 'react';
 
 import api from '../api';
-import config from '../config';
+import config from '../../config';
 import Todos from './Todos';
 
 class App extends React.Component {

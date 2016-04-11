@@ -1,31 +1,51 @@
-import Firebase from 'firebase';
-import uuid from 'node-uuid';
+import request from 'superagent';
 
-import config from './config';
+import config from '.././config';
 
-const getFirebaseRef = () => new Firebase(`${config.firebaseUrl}todos/`);
+const onPostSuccess = () => {
+  console.log('Yay!');
+};
+const onPostFailure = (err) => {
+  console.error(err);
+};
+const sendPost = ({ operation, payload }) => {
+  request
+    .post(config.apiEndpoint)
+    .send({ operation, payload })
+    .end((err, res) => {
+      if (err || !res.ok) {
+        onPostFailure(err);
+      } else {
+        onPostSuccess(res.body);
+      }
+    });
+};
 
 export default {
   todos: {
     create: (title) => {
-      console.log('create', title);
-      const id = uuid.v1();
-      getFirebaseRef().child(id).setWithPriority(
-        { id, title, completed: false },
-        Date.now()
-      );
+      sendPost({
+        operation: 'create',
+        payload: { title },
+      });
     },
     update: (id, title) => {
-      console.log('update', id, title);
-      getFirebaseRef().child(id).child('title').set(title);
+      sendPost({
+        operation: 'update',
+        payload: { id, title },
+      });
     },
     toggle: (todo) => {
-      console.log('toggle', todo);
-      getFirebaseRef().child(todo.id).child('completed').set(!todo.completed);
+      sendPost({
+        operation: 'toggle',
+        payload: { id: todo.id, completed: !todo.completed },
+      });
     },
     delete: (id) => {
-      console.log('delete', id);
-      getFirebaseRef().child(id).remove();
+      sendPost({
+        operation: 'delete',
+        payload: { id },
+      });
     },
   },
 };

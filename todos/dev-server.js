@@ -15,11 +15,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/base.css', (req, res) => {
-  res.sendFile(`${__dirname}/base.css`);
+  res.sendFile(`${__dirname}/static/base.css`);
 });
 
 app.get('/bg.png', (req, res) => {
-  res.sendFile(`${__dirname}/bg.png`);
+  res.sendFile(`${__dirname}/static/bg.png`);
 });
 
 app.listen(port, (error) => {
