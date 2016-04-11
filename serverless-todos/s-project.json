@@ -1,0 +1,7 @@
+{
+  "name": "serverless-todos",
+  "custom": {},
+  "plugins": [
+    "serverless-runtime-babel"
+  ]
+}

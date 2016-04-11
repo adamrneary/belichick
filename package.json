@@ -17,6 +17,7 @@
     "node-uuid": "^1.4.7",
     "react": "15.0.x",
     "react-dom": "15.0.x",
+    "request": "^2.70.0",
     "superagent": "^1.8.3",
     "todomvc-common": "^1.0.2"
   },
@@ -30,6 +31,7 @@
     "eslint-config-airbnb": "^6.2.0",
     "eslint-plugin-react": "^4.2.3",
     "style-loader": "^0.13.1",
+    "serverless-runtime-babel": "0.0.6",
     "webpack": "^1.12.14",
     "webpack-dev-middleware": "^1.6.1",
     "webpack-dev-server": "^1.14.1",
