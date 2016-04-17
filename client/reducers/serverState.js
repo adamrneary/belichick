@@ -1,9 +1,8 @@
 import {
   SERVER_UPDATE,
-  // ADD_TODO, DELETE_TODO, EDIT_TODO, TOGGLE_TODO, COMPLETE_ALL, CLEAR_COMPLETED,
-} from '../constants/ActionTypes';
+} from '../../constants/ActionTypes';
 
-export default function todos(state = {}, action) {
+export default function todos(state = { todos: {} }, action) {
   switch (action.type) {
     case SERVER_UPDATE:
       return action.dataSnapshot.val();

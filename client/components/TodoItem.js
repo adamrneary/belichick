@@ -22,10 +22,10 @@ class TodoItem extends React.Component {
   handleSubmit() {
     const val = this.state.editText.trim();
     if (val) {
-      api.todos.update(this.props.todo.id, val);
+      api.todos.update(this.props.userId, this.props.todo.id, val);
       this.setState({ editing: false, editText: val });
     } else {
-      api.todos.delete(this.props.todo.id);
+      api.todos.delete(this.props.userId, this.props.todo.id);
     }
   }
 
@@ -60,14 +60,14 @@ class TodoItem extends React.Component {
             className="toggle"
             type="checkbox"
             checked={this.props.todo.completed}
-            onChange={() => {api.todos.toggle(this.props.todo); }}
+            onChange={() => {api.todos.toggle(this.props.userId, this.props.todo); }}
           />
           <label onDoubleClick={this.handleEdit}>
             {this.props.todo.title}
           </label>
           <button
             className="destroy"
-            onClick={() => {api.todos.delete(this.props.todo.id); }}
+            onClick={() => {api.todos.delete(this.props.userId, this.props.todo.id); }}
           />
         </div>
         <input
@@ -83,6 +83,7 @@ class TodoItem extends React.Component {
   }
 }
 TodoItem.propTypes = {
+  userId: PropTypes.string,
   todo: PropTypes.object,
 };
 

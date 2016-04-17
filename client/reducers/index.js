@@ -1,8 +1,11 @@
 import { combineReducers } from 'redux';
-import todos from './todos';
+import { routerReducer } from 'react-router-redux';
+
+import serverState from './serverState';
 
 const rootReducer = combineReducers({
-  todos,
+  serverState,
+  routing: routerReducer,
 });
 
 export default rootReducer;

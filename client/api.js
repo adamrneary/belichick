@@ -22,29 +22,37 @@ const sendPost = ({ operation, payload }) => {
 };
 
 export default {
-  todos: {
-    create: (title) => {
+  users: {
+    create: (id) => {
       sendPost({
-        operation: 'create',
-        payload: { title },
-      });
-    },
-    update: (id, title) => {
-      sendPost({
-        operation: 'update',
-        payload: { id, title },
-      });
-    },
-    toggle: (todo) => {
-      sendPost({
-        operation: 'toggle',
-        payload: { id: todo.id, completed: !todo.completed },
-      });
-    },
-    delete: (id) => {
-      sendPost({
-        operation: 'delete',
+        operation: 'createUser',
         payload: { id },
+      });
+    },
+  },
+  todos: {
+    create: (userId, title) => {
+      sendPost({
+        operation: 'createTodo',
+        payload: { userId, title },
+      });
+    },
+    update: (userId, id, title) => {
+      sendPost({
+        operation: 'updateTodo',
+        payload: { userId, id, title },
+      });
+    },
+    toggle: (userId, todo) => {
+      sendPost({
+        operation: 'toggleTodo',
+        payload: { userId, id: todo.id, completed: !todo.completed },
+      });
+    },
+    delete: (userId, id) => {
+      sendPost({
+        operation: 'deleteTodo',
+        payload: { userId, id },
       });
     },
   },

@@ -1,32 +1,32 @@
 import api from '../api';
-import * as types from '../constants/ActionTypes';
+import * as types from '../../constants/ActionTypes';
 
 export function onFirebaseValue(dataSnapshot) {
   return { type: types.SERVER_UPDATE, dataSnapshot };
 }
 
-export function addTodo(text) {
-  api.todos.create(text);
-  return { type: types.ADD_TODO, text };
+export function addTodo(userId, text) {
+  api.todos.create(userId, text);
+  return { type: types.ADD_TODO, userId, text };
 }
 
-export function deleteTodo(id) {
-  api.todos.delete(id);
-  return { type: types.DELETE_TODO, id };
+export function deleteTodo(userId, id) {
+  api.todos.delete(userId, id);
+  return { type: types.DELETE_TODO, userId, id };
 }
 
-export function editTodo(id, text) {
-  return { type: types.EDIT_TODO, id, text };
+export function editTodo(userId, id, text) {
+  return { type: types.EDIT_TODO, userId, id, text };
 }
 
-export function toggleTodo(id) {
-  return { type: types.TOGGLE_TODO, id };
+export function toggleTodo(userId, id) {
+  return { type: types.TOGGLE_TODO, userId, id };
 }
 
-export function completeAll() {
-  return { type: types.COMPLETE_ALL };
+export function completeAll(userId) {
+  return { type: types.COMPLETE_ALL, userId };
 }
 
-export function clearCompleted() {
-  return { type: types.CLEAR_COMPLETED };
+export function clearCompleted(userId) {
+  return { type: types.CLEAR_COMPLETED, userId };
 }

@@ -3,7 +3,7 @@ import React, { PropTypes } from 'react';
 
 import TodoItem from './TodoItem';
 
-const Todos = ({ items, activeTodoCount, nowShowing, toggleTodo }) => {
+const Todos = ({ userId, items, activeTodoCount, nowShowing, toggleTodo }) => {
   const shownTodos = filter(items, item => {
     switch (nowShowing) {
       case 'active':
@@ -23,12 +23,13 @@ const Todos = ({ items, activeTodoCount, nowShowing, toggleTodo }) => {
         checked={activeTodoCount === 0}
       />
 			<ul id={'todo-list'}>
-				{map(shownTodos, todo => <TodoItem key={todo.id} todo={todo} />)}
+				{map(shownTodos, todo => <TodoItem key={todo.id} todo={todo} userId={userId} />)}
 			</ul>
 		</section>
   );
 };
 Todos.propTypes = {
+  userId: PropTypes.string,
   items: PropTypes.object,
   activeTodoCount: PropTypes.number,
   nowShowing: PropTypes.string,

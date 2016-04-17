@@ -1,5 +1,6 @@
 import classnames from 'classnames';
 import React, { PropTypes } from 'react';
+import { browserHistory } from 'react-router';
 
 const Footer = ({ count, completedCount, onClearCompleted, nowShowing, handleShowFilter }) => {
   const activeTodoWord = count === 1 ? 'item' : 'items';
@@ -36,6 +37,9 @@ const Footer = ({ count, completedCount, onClearCompleted, nowShowing, handleSho
           handleShowFilter={handleShowFilter}
         />
       </ul>
+      <button id="new-user" onClick={() => {browserHistory.push('/'); }}>
+        New User
+      </button>
       {clearButton}
     </footer>
   );

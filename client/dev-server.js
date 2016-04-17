@@ -18,6 +18,14 @@ app.get('/bg.png', (req, res) => {
   res.sendFile(`${__dirname}/static/bg.png`);
 });
 
+app.get('/users/bg.png', (req, res) => {
+  res.sendFile(`${__dirname}/static/bg.png`);
+});
+
+app.use((req, res) => {
+  res.status(404).sendFile(`${__dirname}/index.html`);
+});
+
 app.listen(port, (error) => {
   if (error) {
     console.error(error);

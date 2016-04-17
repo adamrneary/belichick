@@ -17,40 +17,51 @@ class App extends React.Component {
       text: '',
       nowShowing: 'all',
     };
+    this.subscribe = this.subscribe.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.clearCompleted = this.clearCompleted.bind(this);
   }
 
   componentWillMount() {
-    this.firebaseRef = new Firebase(`${config.firebaseUrl}todos/`);
-    this.firebaseRef
-      .orderByPriority()
-      .limitToLast(25)
-      .on('value', this.props.actions.onFirebaseValue);
+    this.subscribe(this.props.params.userId);
+  }
+
+  componentWillReceiveProps(newProps) {
+    if (newProps.params.userId !== this.props.params.userId) {
+      this.firebaseRef.off();
+      this.subscribe(newProps.params.userId);
+    }
   }
 
   componentWillUnmount() {
     this.firebaseRef.off();
   }
 
+  subscribe(userId) {
+    this.firebaseRef = new Firebase(`${config.firebaseUrl}/users/${userId}/`);
+    this.firebaseRef.on('value', this.props.actions.onFirebaseValue);
+  }
+
   handleSubmit(e) {
     e.preventDefault();
     if (this.state.text && this.state.text.trim().length !== 0) {
-      this.props.actions.addTodo(this.state.text.trim());
+      this.props.actions.addTodo(this.props.params.userId, this.state.text.trim());
       this.setState({ text: '' });
     }
   }
 
   clearCompleted() {
-    each(this.props.todos, item => {
+    each((this.props.serverState.todos || {}), item => {
       if (item.completed) {
-        this.props.actions.deleteTodo(item.id);
+        this.props.actions.deleteTodo(this.props.params.userId, item.id);
       }
     });
   }
 
   render() {
-    const { todos, actions } = this.props;
+    const { serverState, actions } = this.props;
+    const { variant } = serverState;
+    const todos = serverState.todos || {};
     const activeTodoCount = reduce(todos, (accum, todo) =>
       (todo.completed ? accum : accum + 1)
     , 0);
@@ -66,13 +77,14 @@ class App extends React.Component {
   );
 
     return (
-      <div>
+      <div className={variant}>
         <Header
           text={this.state.text}
           onChange={(e) => {this.setState({ text: e.target.value }); }}
           handleSubmit={this.handleSubmit}
         />
         <Todos
+          userId={this.props.params.userId}
           items={todos}
           activeTodoCount={activeTodoCount}
           nowShowing={this.state.nowShowing}
@@ -84,12 +96,13 @@ class App extends React.Component {
   }
 }
 App.propTypes = {
-  todos: PropTypes.object.isRequired,
+  params: PropTypes.object.isRequired,
+  serverState: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  todos: state.todos,
+  serverState: state.serverState,
 });
 
 const mapDispatchToProps = (dispatch) => ({

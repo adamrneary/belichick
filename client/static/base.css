@@ -348,7 +348,8 @@ label[for='toggle-all'] {
 	font-weight: bold;
 }
 
-#clear-completed {
+#clear-completed,
+#new-user {
 	float: right;
 	position: relative;
 	line-height: 20px;
@@ -358,6 +359,7 @@ label[for='toggle-all'] {
 	padding: 0 10px;
 	border-radius: 3px;
 	box-shadow: 0 -1px 0 0 rgba(0, 0, 0, 0.2);
+	margin-left: 3px;
 }
 
 #clear-completed:hover {
