@@ -8,10 +8,10 @@ const onPostSuccess = () => {
 const onPostFailure = (err) => {
   console.error(err);
 };
-const sendPost = ({ operation, payload }) => {
+const postAction = (payload) => {
   request
     .post(config.apiEndpoint)
-    .send({ operation, payload })
+    .send({ type: payload.type, payload })
     .end((err, res) => {
       if (err || !res.ok) {
         onPostFailure(err);
@@ -21,39 +21,4 @@ const sendPost = ({ operation, payload }) => {
     });
 };
 
-export default {
-  users: {
-    create: (id) => {
-      sendPost({
-        operation: 'createUser',
-        payload: { id },
-      });
-    },
-  },
-  todos: {
-    create: (userId, title) => {
-      sendPost({
-        operation: 'createTodo',
-        payload: { userId, title },
-      });
-    },
-    update: (userId, id, title) => {
-      sendPost({
-        operation: 'updateTodo',
-        payload: { userId, id, title },
-      });
-    },
-    toggle: (userId, todo) => {
-      sendPost({
-        operation: 'toggleTodo',
-        payload: { userId, id: todo.id, completed: !todo.completed },
-      });
-    },
-    delete: (userId, id) => {
-      sendPost({
-        operation: 'deleteTodo',
-        payload: { userId, id },
-      });
-    },
-  },
-};
+export default { postAction };

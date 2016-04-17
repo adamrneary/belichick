@@ -1,26 +1,38 @@
 import api from '../api';
 import * as types from '../../constants/ActionTypes';
 
+const postAndReturn = (actionObject) => {
+  api.postAction(actionObject);
+  return actionObject;
+};
+
 export function onFirebaseValue(dataSnapshot) {
   return { type: types.SERVER_UPDATE, dataSnapshot };
 }
 
-export function addTodo(userId, text) {
-  api.todos.create(userId, text);
-  return { type: types.ADD_TODO, userId, text };
+export function addUser(userId) {
+  return postAndReturn({ type: types.ADD_USER, userId });
 }
 
-export function deleteTodo(userId, id) {
-  api.todos.delete(userId, id);
-  return { type: types.DELETE_TODO, userId, id };
+export function addTodo(userId, title) {
+  return postAndReturn({ type: types.ADD_TODO, userId, title });
 }
 
-export function editTodo(userId, id, text) {
-  return { type: types.EDIT_TODO, userId, id, text };
+export function deleteTodo(userId, todoId) {
+  return postAndReturn({ type: types.DELETE_TODO, userId, todoId });
 }
 
-export function toggleTodo(userId, id) {
-  return { type: types.TOGGLE_TODO, userId, id };
+export function editTodo(userId, todoId, title) {
+  return postAndReturn({ type: types.EDIT_TODO, userId, todoId, title });
+}
+
+export function toggleTodo(userId, todo) {
+  return postAndReturn({
+    type: types.TOGGLE_TODO,
+    userId,
+    todoId: todo.id,
+    completed: !todo.completed,
+  });
 }
 
 export function completeAll(userId) {

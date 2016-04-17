@@ -1,14 +1,13 @@
 import Firebase from 'firebase';
 import uuid from 'node-uuid';
 
+import * as types from '../../../../constants/ActionTypes';
 import config from '../../../../config';
 
 const getExperimentVal = (experiment, callback) => {
   const firebaseRef = new Firebase(config.firebaseUrl);
   firebaseRef.child('experiments').once('value', dataSnapshot => {
-    const experimentVal = dataSnapshot.val()[experiment];
-    console.log({ experimentVal });
-    callback(null, experimentVal);
+    callback(null, dataSnapshot.val()[experiment]);
   });
 };
 const getFirebaseUserRef = (userId) => {
@@ -19,96 +18,84 @@ const getFirebaseTodoRef = (userId, todoId) =>
   getFirebaseUserRef(userId).child('todos').child(todoId);
 
 const actions = {
-
-  createUser: (event, context, callback) => {
-    const { id } = event.payload;
-    if (id === undefined || id === null) {
-      return callback(new Error('No id provided to create user action.'));
-    }
-    return getExperimentVal('colorScheme', (err, colorSchemeVal) => {
-      console.log({ colorSchemeVal });
-      const variant = Math.random() < colorSchemeVal ? 'light' : 'dark';
-      return getFirebaseUserRef(id).set({ id, variant, todos: {} }, callback);
-    });
-  },
-
-  createTodo: (event, context, callback) => {
-    const { userId, title } = event.payload;
-    if (userId === undefined || userId === null) {
-      return callback(new Error('No userId provided to create todo action.'));
-    }
-    if (title === undefined || title === null) {
-      return callback(new Error('No title provided to create todo action.'));
-    }
-    const id = uuid.v1();
-    return getFirebaseTodoRef(userId, id)
-      .setWithPriority(
-        { id, title, completed: false },
-        Date.now(),
-        callback
-      );
-  },
-
-  updateTodo: (event, context, callback) => {
-    const { userId, id, title } = event.payload;
-    if (userId === undefined || userId === null) {
-      return callback(new Error('No userId provided to update todo action.'));
-    }
-    if (id === undefined || id === null) {
-      return callback(new Error('No id provided to update todo action.'));
-    }
-    if (title === undefined || title === null) {
-      return callback(new Error('No title provided to update todo action.'));
-    }
-    return getFirebaseTodoRef(userId, id)
-      .child('title').set(title, callback);
-  },
-
-  toggleTodo: (event, context, callback) => {
-    const { userId, id, completed } = event.payload;
-    if (userId === undefined || userId === null) {
-      return callback(new Error('No userId provided to toggle todo action.'));
-    }
-    if (id === undefined || id === null) {
-      return callback(new Error('No id provided to toggle todo action.'));
-    }
-    return getFirebaseTodoRef(userId, id)
-      .child('completed').set(!!completed, callback);
-  },
-
-  deleteTodo: (event, context, callback) => {
-    const { userId, id } = event.payload;
-    if (userId === undefined || userId === null) {
-      return callback(new Error('No userId provided to delete todo action.'));
-    }
-    if (id === undefined || id === null) {
-      return callback(new Error('No id provided to delete todo action.'));
-    }
-    return getFirebaseTodoRef(userId, id)
-      .remove(callback);
-  },
-
-  echo: (event, context, callback) => {
-    callback(null, event.payload);
-  },
-
   ping: (event, context, callback) => {
     callback(null, 'pong');
   },
+  echo: (event, context, callback) => {
+    callback(null, event.payload);
+  },
 };
 
+const validatePresence = (fields, payload, action, callback) =>
+  fields.reduce((memo, field) => {
+    if (payload[field] === undefined || payload[field] === null) {
+      callback(new Error(`No ${field} field provided to ${action} action.`));
+      return false;
+    }
+    return memo;
+  }, true);
+
+
+actions[types.ADD_USER] = (event, context, callback) => {
+  const fields = ['userId'];
+  if (validatePresence(fields, event.payload, types.ADD_USER, callback)) {
+    const { userId } = event.payload;
+    getExperimentVal('colorScheme', (err, colorSchemeVal) => {
+      const variant = Math.random() < colorSchemeVal ? 'light' : 'dark';
+      getFirebaseUserRef(userId).set({ userId, variant, todos: {} }, callback);
+    });
+  }
+};
+
+actions[types.ADD_TODO] = (event, context, callback) => {
+  const fields = ['userId', 'title'];
+  if (validatePresence(fields, event.payload, types.ADD_TODO, callback)) {
+    const { userId, title } = event.payload;
+    const todoId = uuid.v1();
+    getFirebaseTodoRef(userId, todoId).setWithPriority(
+      { todoId, title, completed: false },
+      Date.now(),
+      callback
+    );
+  }
+};
+
+actions[types.EDIT_TODO] = (event, context, callback) => {
+  const fields = ['userId', 'todoId', 'title'];
+  if (validatePresence(fields, event.payload, types.EDIT_TODO, callback)) {
+    const { userId, todoId, title } = event.payload;
+    getFirebaseTodoRef(userId, todoId).child('title').set(title, callback);
+  }
+};
+
+actions[types.TOGGLE_TODO] = (event, context, callback) => {
+  const fields = ['userId', 'todoId', 'completed'];
+  if (validatePresence(fields, event.payload, types.TOGGLE_TODO, callback)) {
+    const { userId, todoId, completed } = event.payload;
+    getFirebaseTodoRef(userId, todoId).child('completed').set(!!completed, callback);
+  }
+};
+
+actions[types.DELETE_TODO] = (event, context, callback) => {
+  const fields = ['userId', 'todoId'];
+  if (validatePresence(fields, event.payload, types.DELETE_TODO, callback)) {
+    const { userId, todoId } = event.payload;
+    getFirebaseTodoRef(userId, todoId).child('completed').remove(callback);
+  }
+};
 
 /**
  * Provide an event that contains the following keys:
  *
- *   - operation: one of the operations in the switch statement below
- *   - payload: a parameter to pass to the operation being performed
+ *   - type: one of the operations in the actions object above
+ *   - payload: a parameter to pass to the action being performed
  */
 module.exports.handler = (event, context) => {
-  const { operation } = event;
-  if (actions[operation]) {
-    actions[operation](event, context, context.done);
+  const { type } = event;
+  console.log({ event });
+  if (actions[type]) {
+    actions[type](event, context, context.done);
   } else {
-    context.done(new Error(`Unrecognized operation "${operation}"`));
+    context.done(new Error(`Unrecognized action type "${type}"`));
   }
 };

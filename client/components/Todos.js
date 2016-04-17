@@ -23,7 +23,7 @@ const Todos = ({ userId, items, activeTodoCount, nowShowing, toggleTodo }) => {
         checked={activeTodoCount === 0}
       />
 			<ul id={'todo-list'}>
-				{map(shownTodos, todo => <TodoItem key={todo.id} todo={todo} userId={userId} />)}
+				{map(shownTodos, todo => <TodoItem key={todo.todoId} todo={todo} userId={userId} />)}
 			</ul>
 		</section>
   );

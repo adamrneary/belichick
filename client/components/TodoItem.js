@@ -1,7 +1,9 @@
 import classnames from 'classnames';
 import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import api from '../api';
+import * as TodoActions from '../actions';
 
 const ESCAPE_KEY = 27;
 const ENTER_KEY = 13;
@@ -22,10 +24,10 @@ class TodoItem extends React.Component {
   handleSubmit() {
     const val = this.state.editText.trim();
     if (val) {
-      api.todos.update(this.props.userId, this.props.todo.id, val);
+      this.props.editTodo(this.props.userId, this.props.todo.id, val);
       this.setState({ editing: false, editText: val });
     } else {
-      api.todos.delete(this.props.userId, this.props.todo.id);
+      this.props.deleteTodo(this.props.userId, this.props.todo.id);
     }
   }
 
@@ -60,14 +62,14 @@ class TodoItem extends React.Component {
             className="toggle"
             type="checkbox"
             checked={this.props.todo.completed}
-            onChange={() => {api.todos.toggle(this.props.userId, this.props.todo); }}
+            onChange={() => {this.props.toggleTodo(this.props.userId, this.props.todo); }}
           />
           <label onDoubleClick={this.handleEdit}>
             {this.props.todo.title}
           </label>
           <button
             className="destroy"
-            onClick={() => {api.todos.delete(this.props.userId, this.props.todo.id); }}
+            onClick={() => {this.props.deleteTodo(this.props.userId, this.props.todo.id); }}
           />
         </div>
         <input
@@ -85,6 +87,16 @@ class TodoItem extends React.Component {
 TodoItem.propTypes = {
   userId: PropTypes.string,
   todo: PropTypes.object,
+  editTodo: PropTypes.func,
+  deleteTodo: PropTypes.func,
+  toggleTodo: PropTypes.func,
 };
 
-export default TodoItem;
+const mapDispatchToProps = (dispatch) => ({
+  actions: bindActionCreators(TodoActions, dispatch),
+});
+
+export default connect(
+  () => ({}),
+  mapDispatchToProps
+)(TodoItem);

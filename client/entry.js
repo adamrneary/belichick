@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { Router, Route, browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 
-import api from './api';
+import addUser from './actions';
 import App from './containers/App';
 import Loading from './components/Loading';
 import configureStore from './store/configureStore';
@@ -22,7 +22,7 @@ if (module.hot) {
 
 const requireUser = (nextState, replace) => {
   const newUserId = uuid.v1();
-  api.users.create(newUserId);
+  addUser(newUserId);
   replace(`/users/${newUserId}`);
 };
 
