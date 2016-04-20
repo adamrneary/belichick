@@ -1,11 +1,13 @@
+import Immutable from 'immutable';
+
 import {
   SERVER_UPDATE,
 } from '../../constants/ActionTypes';
 
-export default function todos(state = { todos: {} }, action) {
+export default function todos(state = Immutable.fromJS({ todos: {} }), action) {
   switch (action.type) {
     case SERVER_UPDATE:
-      return action.dataSnapshot.val();
+      return Immutable.fromJS(action.dataSnapshot.val());
 
     // case ADD_TODO:
     //   return [

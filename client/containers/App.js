@@ -1,6 +1,6 @@
 import Firebase from 'firebase';
-import { each, reduce } from 'lodash';
 import React, { PropTypes } from 'react';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -51,22 +51,23 @@ class App extends React.Component {
   }
 
   clearCompleted() {
-    each((this.props.serverState.todos || {}), item => {
-      if (item.completed) {
-        this.props.actions.deleteTodo(this.props.params.userId, item.id);
-      }
-    });
+    this.props.serverState.get('todos')
+      .forEach(todo => {
+        if (todo.get('completed')) {
+          this.props.actions.deleteTodo(this.props.params.userId, todo.get('todoId'));
+        }
+      });
   }
 
   render() {
     const { serverState, actions } = this.props;
-    const { variant } = serverState;
-    const todos = serverState.todos || {};
-    const activeTodoCount = reduce(todos, (accum, todo) =>
-      (todo.completed ? accum : accum + 1)
+    const variant = serverState.get('variant');
+    const todos = serverState.get('todos');
+    const activeTodoCount = todos.reduce((accum, todo) =>
+      (todo.get('completed') ? accum : accum + 1)
     , 0);
-    const completedCount = Object.keys(todos).length - activeTodoCount;
-    const footer = !Object.keys(todos).length ? undefined : (
+    const completedCount = todos.size - activeTodoCount;
+    const footer = !todos.size ? undefined : (
       <Footer
         count={activeTodoCount}
         completedCount={completedCount}
@@ -85,7 +86,7 @@ class App extends React.Component {
         />
         <Todos
           userId={this.props.params.userId}
-          items={todos}
+          todos={todos}
           activeTodoCount={activeTodoCount}
           nowShowing={this.state.nowShowing}
           {...actions}
@@ -97,7 +98,7 @@ class App extends React.Component {
 }
 App.propTypes = {
   params: PropTypes.object.isRequired,
-  serverState: PropTypes.object.isRequired,
+  serverState: ImmutablePropTypes.map.isRequired,
   actions: PropTypes.object.isRequired,
 };
 

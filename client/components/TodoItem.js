@@ -1,4 +1,5 @@
 import classnames from 'classnames';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -13,7 +14,7 @@ class TodoItem extends React.Component {
     super(props);
     this.state = {
       editing: false,
-      editText: this.props.todo.title,
+      editText: this.props.todo.get('title'),
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleEdit = this.handleEdit.bind(this);
@@ -24,15 +25,15 @@ class TodoItem extends React.Component {
   handleSubmit() {
     const val = this.state.editText.trim();
     if (val) {
-      this.props.actions.editTodo(this.props.userId, this.props.todo.todoId, val);
+      this.props.actions.editTodo(this.props.userId, this.props.todo.get('todoId'), val);
       this.setState({ editing: false, editText: val });
     } else {
-      this.props.actions.deleteTodo(this.props.userId, this.props.todo.todoId);
+      this.props.actions.deleteTodo(this.props.userId, this.props.todo.get('todoId'));
     }
   }
 
   handleEdit() {
-    this.setState({ editing: true, editText: this.props.todo.title });
+    this.setState({ editing: true, editText: this.props.todo.get('title') });
     const node = this.refs.editField;
     node.focus();
     node.setSelectionRange(node.value.length, node.value.length);
@@ -40,7 +41,7 @@ class TodoItem extends React.Component {
 
   handleKeyDown(event) {
     if (event.which === ESCAPE_KEY) {
-      this.setState({ editing: false, editText: this.props.todo.title });
+      this.setState({ editing: false, editText: this.props.todo.get('title') });
     } else if (event.which === ENTER_KEY) {
       this.handleSubmit();
     }
@@ -52,7 +53,7 @@ class TodoItem extends React.Component {
 
   render() {
     const itemClass = classnames({
-      completed: this.props.todo.completed,
+      completed: this.props.todo.get('completed'),
       editing: this.state.editing,
     });
     return (
@@ -61,18 +62,18 @@ class TodoItem extends React.Component {
           <input
             className="toggle"
             type="checkbox"
-            checked={this.props.todo.completed}
+            checked={this.props.todo.get('completed')}
             onChange={() => {
-              this.props.actions.toggleTodo(this.props.userId, this.props.todo);
+              this.props.actions.toggleTodo(this.props.userId, this.props.todo.toJS());
             }}
           />
           <label onDoubleClick={this.handleEdit}>
-            {this.props.todo.title}
+            {this.props.todo.get('title')}
           </label>
           <button
             className="destroy"
             onClick={() => {
-              this.props.actions.deleteTodo(this.props.userId, this.props.todo.todoId);
+              this.props.actions.deleteTodo(this.props.userId, this.props.todo.get('todoId'));
             }}
           />
         </div>
@@ -90,7 +91,7 @@ class TodoItem extends React.Component {
 }
 TodoItem.propTypes = {
   userId: PropTypes.string,
-  todo: PropTypes.object,
+  todo: ImmutablePropTypes.map,
   actions: PropTypes.object.isRequired,
 };
 

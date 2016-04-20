@@ -1,36 +1,40 @@
-import { each, filter, map } from 'lodash';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import React, { PropTypes } from 'react';
 
 import TodoItem from './TodoItem';
 
-const Todos = ({ userId, items, activeTodoCount, nowShowing, toggleTodo }) => {
-  const shownTodos = filter(items, item => {
+const Todos = ({ userId, todos, activeTodoCount, nowShowing, toggleTodo }) => {
+  const shownTodos = todos.filter(todo => {
     switch (nowShowing) {
       case 'active':
-        return !item.completed;
+        return !todo.get('completed');
       case 'completed':
-        return item.completed;
+        return todo.get('completed');
       default:
         return true;
     }
-  });
+  }).toList();
   return (
     <section id={'main'}>
       <input
         id={'toggle-all'}
         type={'checkbox'}
-        onChange={() => { each(items, toggleTodo); }}
+        onChange={() => { todos.each(toggleTodo); }}
         checked={activeTodoCount === 0}
       />
 			<ul id={'todo-list'}>
-				{map(shownTodos, todo => <TodoItem key={todo.todoId} todo={todo} userId={userId} />)}
+				{
+          shownTodos.map(todo =>
+            <TodoItem key={todo.get('todoId')} todo={todo} userId={userId} />
+          ).toJS()
+        }
 			</ul>
 		</section>
   );
 };
 Todos.propTypes = {
   userId: PropTypes.string,
-  items: PropTypes.object,
+  todos: ImmutablePropTypes.map,
   activeTodoCount: PropTypes.number,
   nowShowing: PropTypes.string,
   toggleTodo: PropTypes.func,
