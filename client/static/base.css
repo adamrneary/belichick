@@ -270,8 +270,6 @@ label[for='toggle-all'] {
 	margin-left: 45px;
 	display: block;
 	line-height: 1.2;
-	-webkit-transition: color 0.4s;
-	transition: color 0.4s;
 }
 
 #todo-list li.completed label {
