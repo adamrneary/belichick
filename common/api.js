@@ -1,6 +1,6 @@
 import request from 'superagent';
 
-import config from '.././config';
+import config from '../config';
 
 const onPostSuccess = () => {
   console.log('Yay!');

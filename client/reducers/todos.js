@@ -4,7 +4,7 @@ import uuid from 'node-uuid';
 import {
   SERVER_UPDATE,
   ADD_TODO, DELETE_TODO, EDIT_TODO, TOGGLE_TODO,
-} from '../../constants/ActionTypes';
+} from '../../common/ActionTypes';
 
 const actions = {};
 

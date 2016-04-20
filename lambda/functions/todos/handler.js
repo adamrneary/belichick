@@ -1,14 +1,15 @@
 import Firebase from 'firebase';
 import uuid from 'node-uuid';
 
-import * as types from '../../../../constants/ActionTypes';
+import * as types from '../../../../common/ActionTypes';
 import config from '../../../../config';
 
-const getExperimentVal = (experiment, callback) => {
+const getExperimentVal = (callback) => {
   const firebaseRef = new Firebase(config.firebaseUrl);
-  firebaseRef.child('experiments').once('value', dataSnapshot => {
-    callback(null, dataSnapshot.val()[experiment]);
-  });
+  firebaseRef.child('experiments').child('colorScheme').child('targetAllocation')
+    .once('value', dataSnapshot => {
+      callback(null, dataSnapshot.val());
+    });
 };
 const getFirebaseUserRef = (userId) => {
   const firebaseRef = new Firebase(config.firebaseUrl);
@@ -40,7 +41,7 @@ actions[types.ADD_USER] = (event, context, callback) => {
   const fields = ['userId'];
   if (validatePresence(fields, event.payload, types.ADD_USER, callback)) {
     const { userId } = event.payload;
-    getExperimentVal('colorScheme', (err, colorSchemeVal) => {
+    getExperimentVal((err, colorSchemeVal) => {
       const variant = Math.random() < colorSchemeVal ? 'light' : 'dark';
       getFirebaseUserRef(userId).set({ userId, variant, todos: {} }, callback);
     });
@@ -81,6 +82,16 @@ actions[types.DELETE_TODO] = (event, context, callback) => {
   if (validatePresence(fields, event.payload, types.DELETE_TODO, callback)) {
     const { userId, todoId } = event.payload;
     getFirebaseTodoRef(userId, todoId).remove(callback);
+  }
+};
+
+actions[types.UPDATE_ALLOCATION] = (event, context, callback) => {
+  const fields = ['val'];
+  if (validatePresence(fields, event.payload, types.UPDATE_ALLOCATION, callback)) {
+    const { val } = event.payload;
+    const firebaseRef = new Firebase(config.firebaseUrl);
+    firebaseRef.child('experiments').child('colorScheme').child('targetAllocation')
+      .set(val, callback);
   }
 };
 

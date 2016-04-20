@@ -29,6 +29,7 @@ class App extends React.Component {
   componentWillReceiveProps(newProps) {
     if (newProps.params.userId !== this.props.params.userId) {
       this.firebaseRef.off();
+      this.props.actions.onFirebaseValue();
       this.subscribe(newProps.params.userId);
     }
   }

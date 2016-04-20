@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "cd client && node dev-server.js",
+    "start": "nf start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -12,10 +12,13 @@
   "dependencies": {
     "classnames": "^2.2.3",
     "core-decorators": "^0.12.0",
+    "d3": "^3.5.16",
     "firebase": "^2.4.2",
     "immutable": "^3.8.1",
     "lodash": "^4.7.0",
     "node-uuid": "^1.4.7",
+    "numeral": "^1.5.3",
+    "rc-slider": "^3.6.0",
     "react": "15.0.x",
     "react-dom": "15.0.x",
     "react-immutable-proptypes": "^1.7.1",
@@ -36,6 +39,7 @@
     "eslint": "^2.5.3",
     "eslint-config-airbnb": "^6.2.0",
     "eslint-plugin-react": "^4.2.3",
+    "foreman": "1.4.x",
     "raw-loader": "^0.5.1",
     "style-loader": "^0.13.1",
     "webpack": "^1.12.14",

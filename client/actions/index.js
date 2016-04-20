@@ -1,5 +1,5 @@
-import api from '../api';
-import * as types from '../../constants/ActionTypes';
+import api from '../../common/api';
+import * as types from '../../common/ActionTypes';
 
 const postAndReturn = (actionObject) => {
   api.postAction(actionObject);
