@@ -9,7 +9,7 @@ import {
 const actions = {};
 
 actions[SERVER_UPDATE] = (state, action) =>
-  Immutable.fromJS(action.dataSnapshot.val().todos);
+  Immutable.fromJS(action.dataSnapshot.val().todos || {});
 
 actions[ADD_TODO] = (state, action) => {
   const todoId = uuid.v1();

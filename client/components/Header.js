@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
 
-const Header = ({ text, onChange, handleSubmit }) => (
+const Header = ({ text, variant, onChange, handleSubmit }) => (
   <header id="header">
-    <h1>todos</h1>
+    <h1>Todos <small>(Solarized {variant})</small></h1>
     <form onSubmit={handleSubmit}>
       <input
         id="new-todo"
@@ -16,6 +16,7 @@ const Header = ({ text, onChange, handleSubmit }) => (
 );
 Header.propTypes = {
   text: PropTypes.string.isRequired,
+  variant: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
 };

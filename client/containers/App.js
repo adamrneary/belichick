@@ -76,18 +76,21 @@ class App extends React.Component {
 
     return (
       <div className={variant}>
-        <Header
-          text={this.state.text}
-          onChange={(e) => {this.setState({ text: e.target.value }); }}
-          handleSubmit={this.handleSubmit}
-        />
-        <Todos
-          userId={this.props.params.userId}
-          todos={todos}
-          activeTodoCount={activeTodoCount}
-          nowShowing={this.state.nowShowing}
-          {...actions}
-        />
+        <div className="container">
+          <Header
+            text={this.state.text}
+            variant={variant}
+            onChange={(e) => {this.setState({ text: e.target.value }); }}
+            handleSubmit={this.handleSubmit}
+          />
+          <Todos
+            userId={this.props.params.userId}
+            todos={todos}
+            activeTodoCount={activeTodoCount}
+            nowShowing={this.state.nowShowing}
+            {...actions}
+          />
+        </div>
         {footer}
       </div>
     );
