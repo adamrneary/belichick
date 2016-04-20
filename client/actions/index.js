@@ -34,11 +34,3 @@ export function toggleTodo(userId, todo) {
     completed: !todo.completed,
   });
 }
-
-export function completeAll(userId) {
-  return { type: types.COMPLETE_ALL, userId };
-}
-
-export function clearCompleted(userId) {
-  return { type: types.CLEAR_COMPLETED, userId };
-}

@@ -55,6 +55,8 @@ class TodoItem extends React.Component {
     const itemClass = classnames({
       completed: this.props.todo.get('completed'),
       editing: this.state.editing,
+      pendingUpdate: this.props.todo.get('pendingUpdate'),
+      pendingRemoval: this.props.todo.get('pendingRemoval'),
     });
     return (
       <li className={itemClass}>

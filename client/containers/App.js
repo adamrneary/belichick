@@ -51,18 +51,15 @@ class App extends React.Component {
   }
 
   clearCompleted() {
-    this.props.serverState.get('todos')
-      .forEach(todo => {
-        if (todo.get('completed')) {
-          this.props.actions.deleteTodo(this.props.params.userId, todo.get('todoId'));
-        }
-      });
+    this.props.todos.forEach(todo => {
+      if (todo.get('completed')) {
+        this.props.actions.deleteTodo(this.props.params.userId, todo.get('todoId'));
+      }
+    });
   }
 
   render() {
-    const { serverState, actions } = this.props;
-    const variant = serverState.get('variant');
-    const todos = serverState.get('todos');
+    const { todos, variant, actions } = this.props;
     const activeTodoCount = todos.reduce((accum, todo) =>
       (todo.get('completed') ? accum : accum + 1)
     , 0);
@@ -98,12 +95,14 @@ class App extends React.Component {
 }
 App.propTypes = {
   params: PropTypes.object.isRequired,
-  serverState: ImmutablePropTypes.map.isRequired,
+  todos: ImmutablePropTypes.map.isRequired,
+  variant: PropTypes.string.isRequired,
   actions: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  serverState: state.serverState,
+  todos: state.todos,
+  variant: state.variant,
 });
 
 const mapDispatchToProps = (dispatch) => ({
