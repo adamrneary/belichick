@@ -80,7 +80,7 @@ actions[types.DELETE_TODO] = (event, context, callback) => {
   const fields = ['userId', 'todoId'];
   if (validatePresence(fields, event.payload, types.DELETE_TODO, callback)) {
     const { userId, todoId } = event.payload;
-    getFirebaseTodoRef(userId, todoId).child('completed').remove(callback);
+    getFirebaseTodoRef(userId, todoId).remove(callback);
   }
 };
 

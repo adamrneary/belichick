@@ -30,7 +30,7 @@ export function toggleTodo(userId, todo) {
   return postAndReturn({
     type: types.TOGGLE_TODO,
     userId,
-    todoId: todo.id,
+    todoId: todo.todoId,
     completed: !todo.completed,
   });
 }

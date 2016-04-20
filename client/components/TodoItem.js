@@ -24,10 +24,10 @@ class TodoItem extends React.Component {
   handleSubmit() {
     const val = this.state.editText.trim();
     if (val) {
-      this.props.editTodo(this.props.userId, this.props.todo.id, val);
+      this.props.actions.editTodo(this.props.userId, this.props.todo.todoId, val);
       this.setState({ editing: false, editText: val });
     } else {
-      this.props.deleteTodo(this.props.userId, this.props.todo.id);
+      this.props.actions.deleteTodo(this.props.userId, this.props.todo.todoId);
     }
   }
 
@@ -62,14 +62,18 @@ class TodoItem extends React.Component {
             className="toggle"
             type="checkbox"
             checked={this.props.todo.completed}
-            onChange={() => {this.props.toggleTodo(this.props.userId, this.props.todo); }}
+            onChange={() => {
+              this.props.actions.toggleTodo(this.props.userId, this.props.todo);
+            }}
           />
           <label onDoubleClick={this.handleEdit}>
             {this.props.todo.title}
           </label>
           <button
             className="destroy"
-            onClick={() => {this.props.deleteTodo(this.props.userId, this.props.todo.id); }}
+            onClick={() => {
+              this.props.actions.deleteTodo(this.props.userId, this.props.todo.todoId);
+            }}
           />
         </div>
         <input
@@ -87,9 +91,7 @@ class TodoItem extends React.Component {
 TodoItem.propTypes = {
   userId: PropTypes.string,
   todo: PropTypes.object,
-  editTodo: PropTypes.func,
-  deleteTodo: PropTypes.func,
-  toggleTodo: PropTypes.func,
+  actions: PropTypes.object.isRequired,
 };
 
 const mapDispatchToProps = (dispatch) => ({
