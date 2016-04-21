@@ -33,10 +33,14 @@ actions[types.ADD_USER] = (event, context, callback) => {
     fb.child('experiments/colorScheme/targetAllocation').once('value', dataSnapshot => {
       const variant = Math.random() < dataSnapshot.val() ? 'light' : 'dark';
       fb.child(`users/${userId}`)
-        .set({ userId, variant, todos: {} });
-      fb.child(`experiments/colorScheme/performanceData/${variant}/users`)
-        .transaction(increment);
-      callback();
+        .set({ userId, variant, todos: {} }, err => {
+          if (err) {
+            callback(err);
+          } else {
+            fb.child(`experiments/colorScheme/performanceData/${variant}/users`)
+            .transaction(increment, callback);
+          }
+        });
     });
   }
 };
@@ -48,12 +52,16 @@ actions[types.ADD_TODO] = (event, context, callback) => {
     const todoId = uuid.v1();
     const fb = getFirebaseRef();
     fb.child(`users/${userId}/todos/${todoId}`)
-      .setWithPriority({ todoId, title, completed: false }, Date.now());
-    fb.child(`users/${userId}/variant`).once('value', dataSnapshot => {
-      fb.child(`experiments/colorScheme/performanceData/${dataSnapshot.val()}/todosCreated`)
-        .transaction(increment);
-      callback();
-    });
+      .setWithPriority({ todoId, title, completed: false }, Date.now(), err => {
+        if (err) {
+          callback(err);
+        } else {
+          fb.child(`users/${userId}/variant`).once('value', dataSnapshot => {
+            fb.child(`experiments/colorScheme/performanceData/${dataSnapshot.val()}/todosCreated`)
+              .transaction(increment, callback);
+          });
+        }
+      });
   }
 };
 
@@ -72,16 +80,20 @@ actions[types.TOGGLE_TODO] = (event, context, callback) => {
     const { userId, todoId, completed } = event.payload;
     const fb = getFirebaseRef();
     fb.child(`users/${userId}/todos/${todoId}/completed`)
-      .set(!!completed);
-    if (!!completed) {
-      fb.child(`users/${userId}/variant`).once('value', dataSnapshot => {
-        fb.child(`experiments/colorScheme/performanceData/${dataSnapshot.val()}/todosCompleted`)
-          .transaction(increment);
-        callback();
+      .set(!!completed, err => {
+        if (err) {
+          callback(err);
+        } else {
+          if (!!completed) {
+            fb.child(`users/${userId}/variant`).once('value', dS => {
+              fb.child(`experiments/colorScheme/performanceData/${dS.val()}/todosCompleted`)
+                .transaction(increment, callback);
+            });
+          } else {
+            callback();
+          }
+        }
       });
-    } else {
-      callback();
-    }
   }
 };
 

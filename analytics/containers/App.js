@@ -16,9 +16,6 @@ class App extends React.Component {
       text: '',
       nowShowing: 'all',
     };
-    // this.subscribe = this.subscribe.bind(this);
-    // this.handleSubmit = this.handleSubmit.bind(this);
-    // this.clearCompleted = this.clearCompleted.bind(this);
   }
 
   componentWillMount() {

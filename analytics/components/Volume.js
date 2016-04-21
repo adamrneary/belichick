@@ -140,7 +140,7 @@ class Volume extends React.Component {
         </form>
         <div id="VolumeChart" style={{ width: '100%' }} ref={refAssignment}></div>
         <p>
-          D3 data visualization example taken from <a href="https://bl.ocks.org/mbostock/3943967">https://bl.ocks.org/mbostock/3943967</a>
+          D3 data visualization example cribbed liberally from <a href="https://bl.ocks.org/mbostock/3943967">https://bl.ocks.org/mbostock/3943967</a>
         </p>
       </div>
     );
