@@ -29,7 +29,7 @@ class App extends React.Component {
 
   render() {
     const { actions, experiments } = this.props;
-    if (!experiments.targetAllocation) {
+    if (!experiments.performanceData) {
       return <div></div>;
     }
     return (

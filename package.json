@@ -40,6 +40,7 @@
     "eslint-config-airbnb": "^6.2.0",
     "eslint-plugin-react": "^4.2.3",
     "foreman": "1.4.x",
+    "nightmare": "^2.3.3",
     "raw-loader": "^0.5.1",
     "style-loader": "^0.13.1",
     "webpack": "^1.12.14",
