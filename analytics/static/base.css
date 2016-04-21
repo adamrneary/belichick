@@ -54,6 +54,16 @@ tbody td {
   position: relative;
   text-transform: uppercase;
 }
+.Volume p {
+  position: absolute;
+  bottom: -11px;
+  left: 11px;
+  font-size: 11px;
+  text-transform: none;
+}
+.Volume p a {
+  color: #2aa198;
+}
 .tick {
   display: none;
 }
