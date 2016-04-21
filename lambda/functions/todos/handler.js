@@ -4,20 +4,8 @@ import uuid from 'node-uuid';
 import * as types from '../../../../common/ActionTypes';
 import config from '../../../../config';
 
-const getExperimentVal = (callback) => {
-  const firebaseRef = new Firebase(config.firebaseUrl);
-  firebaseRef.child('experiments').child('colorScheme').child('targetAllocation')
-    .once('value', dataSnapshot => {
-      callback(null, dataSnapshot.val());
-    });
-};
-const getFirebaseUserRef = (userId) => {
-  const firebaseRef = new Firebase(config.firebaseUrl);
-  return firebaseRef.child('users').child(userId);
-};
-const getFirebaseTodoRef = (userId, todoId) =>
-  getFirebaseUserRef(userId).child('todos').child(todoId);
-
+const increment = val => (val || 0) + 1;
+const getFirebaseRef = () => new Firebase(config.firebaseUrl);
 const actions = {
   ping: (event, context, callback) => {
     callback(null, 'pong');
@@ -41,9 +29,14 @@ actions[types.ADD_USER] = (event, context, callback) => {
   const fields = ['userId'];
   if (validatePresence(fields, event.payload, types.ADD_USER, callback)) {
     const { userId } = event.payload;
-    getExperimentVal((err, colorSchemeVal) => {
-      const variant = Math.random() < colorSchemeVal ? 'light' : 'dark';
-      getFirebaseUserRef(userId).set({ userId, variant, todos: {} }, callback);
+    const fb = getFirebaseRef();
+    fb.child('experiments/colorScheme/targetAllocation').once('value', dataSnapshot => {
+      const variant = Math.random() < dataSnapshot.val() ? 'light' : 'dark';
+      fb.child(`users/${userId}`)
+        .set({ userId, variant, todos: {} });
+      fb.child(`experiments/colorScheme/performanceData/${variant}/users`)
+        .transaction(increment);
+      callback();
     });
   }
 };
@@ -53,11 +46,14 @@ actions[types.ADD_TODO] = (event, context, callback) => {
   if (validatePresence(fields, event.payload, types.ADD_TODO, callback)) {
     const { userId, title } = event.payload;
     const todoId = uuid.v1();
-    getFirebaseTodoRef(userId, todoId).setWithPriority(
-      { todoId, title, completed: false },
-      Date.now(),
-      callback
-    );
+    const fb = getFirebaseRef();
+    fb.child(`users/${userId}/todos/${todoId}`)
+      .setWithPriority({ todoId, title, completed: false }, Date.now());
+    fb.child(`users/${userId}/variant`).once('value', dataSnapshot => {
+      fb.child(`experiments/colorScheme/performanceData/${dataSnapshot.val()}/todosCreated`)
+        .transaction(increment);
+      callback();
+    });
   }
 };
 
@@ -65,7 +61,8 @@ actions[types.EDIT_TODO] = (event, context, callback) => {
   const fields = ['userId', 'todoId', 'title'];
   if (validatePresence(fields, event.payload, types.EDIT_TODO, callback)) {
     const { userId, todoId, title } = event.payload;
-    getFirebaseTodoRef(userId, todoId).child('title').set(title, callback);
+    getFirebaseRef().child(`users/${userId}/todos/${todoId}/title`)
+      .set(title, callback);
   }
 };
 
@@ -73,7 +70,18 @@ actions[types.TOGGLE_TODO] = (event, context, callback) => {
   const fields = ['userId', 'todoId', 'completed'];
   if (validatePresence(fields, event.payload, types.TOGGLE_TODO, callback)) {
     const { userId, todoId, completed } = event.payload;
-    getFirebaseTodoRef(userId, todoId).child('completed').set(!!completed, callback);
+    const fb = getFirebaseRef();
+    fb.child(`users/${userId}/todos/${todoId}/completed`)
+      .set(!!completed);
+    if (!!completed) {
+      fb.child(`users/${userId}/variant`).once('value', dataSnapshot => {
+        fb.child(`experiments/colorScheme/performanceData/${dataSnapshot.val()}/todosCompleted`)
+          .transaction(increment);
+        callback();
+      });
+    } else {
+      callback();
+    }
   }
 };
 
@@ -81,7 +89,8 @@ actions[types.DELETE_TODO] = (event, context, callback) => {
   const fields = ['userId', 'todoId'];
   if (validatePresence(fields, event.payload, types.DELETE_TODO, callback)) {
     const { userId, todoId } = event.payload;
-    getFirebaseTodoRef(userId, todoId).remove(callback);
+    getFirebaseRef().child(`users/${userId}/todos/${todoId}`)
+      .remove(callback);
   }
 };
 
@@ -89,8 +98,7 @@ actions[types.UPDATE_ALLOCATION] = (event, context, callback) => {
   const fields = ['val'];
   if (validatePresence(fields, event.payload, types.UPDATE_ALLOCATION, callback)) {
     const { val } = event.payload;
-    const firebaseRef = new Firebase(config.firebaseUrl);
-    firebaseRef.child('experiments').child('colorScheme').child('targetAllocation')
+    getFirebaseRef().child('experiments/colorScheme/targetAllocation')
       .set(val, callback);
   }
 };
@@ -103,7 +111,6 @@ actions[types.UPDATE_ALLOCATION] = (event, context, callback) => {
  */
 module.exports.handler = (event, context) => {
   const { type } = event;
-  console.log({ event });
   if (actions[type]) {
     actions[type](event, context, context.done);
   } else {
